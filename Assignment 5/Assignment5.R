@@ -11,12 +11,13 @@ qqnorm(grades)
 
 # a)
 # H_0: m <= 6, H_1: m > 6, alpha=1%
-m = 6
 n = length(grades)
+m = 6
+
 l = sum(grades>m)
 k = sum(grades==m)
 
-binom.test(l,n,alt="g",conf.level=0.99)
+binom.test(l,n-k,alt="g",conf.level=0.99)
 
 help(binom.test)
 
@@ -24,12 +25,20 @@ help(binom.test)
 # H_0: m = 6.5, H_1: m != 6.5, alpha=5%
 m = 6.5
 
-binom.test(l,n,alt="t",conf.level=0.95)
+l = sum(grades>m)
+k = sum(grades==m)
+
+binom.test(l,n-k,alt="t",conf.level=0.95)
 
 # p = P(grade>=7), H_0: p >= 35%, H_1: p < 35%, alpha=10%
-length(grades[grades>=7])/length(grades)
+m = 7
 
+l = sum(grades>m)
+k = sum(grades==m)
 
+binom.test(l,n-k,alt="l",conf.level=0.90)
+
+hist(grades)
 
 ### Exercise 5.2 ###
 
@@ -42,18 +51,44 @@ seeded = clouds$seeded.clouds
 # graphical and numerical investigation
 
 summary(seeded)
+mad(seeded)
+sd(seeded)
 
-duplicated(sort(seeded))
+# symplot and boxplot
+par(mfrow=c(1,2))
+symplot(seeded,
+        main="Symplot of precipitation values for 'seeded' group")
+boxplot(seeded,
+        main="Boxplot of precipitation values for 'seeded' group")
 
-hist(seeded)
-hist(seeded[seeded<=500])
-plot(density(seeded))
-symplot(seeded)
-boxplot(seeded)
-plot(sort(seeded,decreasing=TRUE),main="Scatterplot of seeded values")
-qqnorm(seeded)
-qqexp(seeded)
-abline(seeded)
+# histograms
+hist(seeded,
+     main="Histogram of precipitation values for 'seeded' group",
+     xlab="Precipitation values - 'seeded'")
+hist(seeded,
+     breaks=10,
+     main="Histogram of precipitation values for 'seeded' group",
+     xlab="Precipitation values - 'seeded'")
+
+hist(seeded[seeded<500],
+     main="Histogram of precipitation values for 'seeded' group (value < 500)",
+     xlab="Precipitation values - 'seeded'")
+hist(seeded[seeded<500],
+     breaks=7,
+     main="Histogram of precipitation values for 'seeded' group (value < 500)",
+     xlab="Precipitation values - 'seeded'")
+
+# QQ plots
+qqnorm(seeded,
+       main="QQ plot against normal dist.")
+qqexp(seeded,
+      main="QQ plot against exponential dist.")
+
+qqchisq(seeded,
+        df=1,
+        main="QQ plot against Chi squared dist. df =")
+qqlnorm(seeded,
+        main="QQ plot against lognormal dist.")
 
 # b)
 # sample standard deviation
@@ -82,7 +117,7 @@ mad(seeded)/mad_boot
 # g)
 # location test on location less than 119.0, alpha=5%
 m = 119.0
-n = length(seeded)
+
 l = sum(seeded>m)
 k = sum(seeded==m)
 
