@@ -3,6 +3,8 @@
 data = read.csv("expensescrime.txt", sep=" ")
 nausea = read.csv("nausea.txt", sep=" ")
 
+library(mvtnorm)
+
 source("functions_Ch7.txt")
 
 # a)
@@ -31,89 +33,87 @@ pairs(cbind(data$employ, data$pop))
 
 lawyers_rate = data$lawyers/data$pop
 
-data$pop[8]
-data$lawyers[8]
-
-max(lawyers_rate)
-
-lawyers_rate[8]
-data$state[8]
+pairs(cbind(lawyers_rate, data$crime), labels=c('Lawyers rate', 'Crime'))
 
 lawyers_rate[8] = mean(lawyers_rate)
 
 pairs(cbind(lawyers_rate, data$crime), labels=c('Lawyers rate', 'Crime'))
-
-plot(lawyers_rate, data$crime)
-plot(data$crime, lawyers_rate)
-
-help(plot)
-
-help(pairs)
 
 # c)
 
 cor.test(lawyers_rate, data$crime, method='k')
 cor.test(lawyers_rate, data$crime, method='s')
 
-help(cor.test)
-
 # d)
 
 B = 10000
-t = cor.test(lawyers_rate, data$crime, method='k')
+t = cor.test(lawyers_rate, data$crime, method='k')$p.value
 permutationval = numeric(B)
 for(i in 1:B) {
-  sample_lawyers = sample(lawyers_rate)
   sample_crime = sample(data$crime)
-  boot_sample = sample(cbind(lawyers_rate, data$crime))
-  pl = cor.test(boot_sample[1:51],
-                boot_sample[52:102],
+  pl = cor.test(lawyers_rate,
+                sample_crime,
                 method='k',
                 alternative='g')$p.value
-  pr = cor.test(boot_sample[1:51],
-                boot_sample[52:102],
+  pr = cor.test(lawyers_rate,
+                sample_crime,
                 method='k',
                 alternative='l')$p.value
   p = 2*min(pl, pr)
-  print(p)
   permutationval[i] = p
 }
 
-permutationval
-hist(permutationval)
-
-# e)
+length(permutationval[permutationval<=t])/B
 
 # f)
 
 # Asymptotic Relative Efficiency function
 aresimulation = function(B, n) {
   pvalkendalltest=numeric(B)
+  pvalspearmantest=numeric(B)
   for(i in 1:B)
   {
     v = rmvnorm(n, mean=c(0,0), sigma=matrix(c(1,0.5,0.5,1), 2,2))
     pvalkendalltest[i] = cor.test(v[,1], v[,2], method='k')$p.value
+    pvalspearmantest[i] = cor.test(v[,1], v[,2], method='s')$p.value
   }
   powerkendall=sum(pvalkendalltest<0.05)/B
-  rbind(c("Kendall"),c(powerkendall))
+  powerspearman=sum(pvalspearmantest<0.05)/B
+  sim = rbind(c("Kendall", "Spearman"), c(powerkendall, powerspearman))
+  sim[2,] = as.numeric(sim[2,])
+  sim
 }
 
 B = 10000
 
 # test 1: n = 45
 n = 45
-aresimulation(B, n)
+sim1 = aresimulation(B, n)
 
 # test 2: n = 50
 n = 50
-aresimulation(B, n)
+sim2 = aresimulation(B, n)
 
 # test 3: n = 55
 n = 55
-aresimulation(B, n)
+sim3 = aresimulation(B, n)
 
 
-### Exercise 6.1 ###
+col1 = c(as.numeric(sim1[2,1])/as.numeric(sim1[2,2]),
+         as.numeric(sim2[2,1])/as.numeric(sim1[2,2]),
+         as.numeric(sim3[2,1])/as.numeric(sim1[2,2]))
+
+col2 = c(as.numeric(sim1[2,1])/as.numeric(sim2[2,2]),
+         as.numeric(sim2[2,1])/as.numeric(sim2[2,2]),
+         as.numeric(sim3[2,1])/as.numeric(sim2[2,2]))
+
+col3 = c(as.numeric(sim1[2,1])/as.numeric(sim3[2,2]),
+         as.numeric(sim2[2,1])/as.numeric(sim3[2,2]),
+         as.numeric(sim3[2,1])/as.numeric(sim3[2,2]))
+
+round(matrix(c(col1, col2, col3), nrow=3, ncol=3),3)
+
+### Exercise 6.2 ###
 
 alpha = 0.05
 
@@ -143,18 +143,40 @@ pr = 1 - phyper(24-1, 1044, 1182, 39)
 2*min(c(pl, pr))
 
 
-### Exercise 6.1 ###
+### Exercise 6.3 ###
 
-# a)
+data = data.frame(nausea$Incidence.of.Nausea,
+                  nausea$Number.of.Patients-nausea$Incidence.of.Nausea,
+                  row.names = rownames(nausea))
+colnames(data) = c('Nausea', 'No nausea')
+
+alpha = 0.05
 
 # b)
 
+chisq.test(data)
+
+chisq.test(data)$expected
+
 # c)
+
+chisq.test(data, simulate.p.value=TRUE)
 
 # d)
 
+round(chisq.test(data)$residuals, 2)
+
+round(chisq.test(data)$stdres, 2)
+
 # e)
 
-# f)
+B=10000
+
+t = maxcontributionscat(data)
+boot = bootstrapcat(data, B, maxcontributionscat)
+
+mean(boot>=t)
 
 # g)
+
+fisher.test(data[1:2,], alternative='greater')
