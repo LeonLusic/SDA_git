@@ -80,6 +80,12 @@ lmfull = lm(oxidant~wind+temperature+humidity+insolation)
 
 summary(lmfull)
 
+summary(lm(oxidant~wind+temperature+humidity))
+
+summary(lm(oxidant~wind+temperature+humidity-1))
+
+summary(lm(oxidant~wind+temperature-1))
+
 # d)
 
 # e)
