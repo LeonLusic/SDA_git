@@ -1,4 +1,4 @@
-"photo"	"observer1"	"observer 2"
+"photo"	"observer1"	"observer2"
 56	50	40
 38	25	30
 25	30	40
