@@ -61,12 +61,12 @@ logobs2 = log(observer2)
 par(mfrow=c(1,2))
 
 plot(logobs1,logphoto,
-     xlab='Observer 1 count',
-     ylab='Photo count')
+     xlab='Log observer 1 count',
+     ylab='Log photo count')
 plot(logobs2,logphoto,
-     xlab='Observer 2 count',
-     ylab='Photo count')
-mtext('Number of observed vs. photographed geese',
+     xlab='Log observer 2 count',
+     ylab='Log photo count')
+mtext('Log of number of observed vs. log of photographed geese',
       side=3, line=-3, outer=TRUE)
 
 loglm1 = lm(logphoto~logobs1)
@@ -75,8 +75,19 @@ loglm2 = lm(logphoto~logobs2)
 summary(loglm1)
 summary(loglm2)
 
-qqnorm(loglm1$residuals)
-qqnorm(loglm2$residuals)
+par(mfrow=c(1,2))
+
+plot(loglm1$residuals, logphoto,
+     xlab='Residuals of log(observer1)',
+     ylab='Log of number of geese in photos')
+abline(v=0)
+plot(loglm2$residuals, logphoto,
+     xlab='Residuals of log(observer2)',
+     ylab='Log of number of geese in photos')
+abline(v=0)
+
+qqnorm(loglm1$residuals, main='Normal QQ-plot - Observer 1 residuals')
+qqnorm(loglm2$residuals, main='Normal QQ-plot - Observer 2 residuals')
 
 # f)
 
