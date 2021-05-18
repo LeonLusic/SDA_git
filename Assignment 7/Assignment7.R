@@ -45,10 +45,13 @@ abline(v=0)
 
 # d)
 
-qqnorm(observer1lm$residuals)
-qqnorm(observer2lm$residuals)
+par(mfrow=c(1,2))
+
+qqnorm(observer1lm$residuals, main='Normal QQ-plot for observer 1')
+qqnorm(observer2lm$residuals, main='Normal QQ-plot for observer 2')
 
 ks.test(lm.norm.test(observer1,photo), pnorm)
+ks.test(lm.norm.test(observer2,photo), pnorm)
 
 help(lm.norm)
 
@@ -137,7 +140,7 @@ summary(lmfull)
 
 summary(lm(oxidant~wind+temperature+humidity))
 
-summary(lm(oxidant~wind+temperature+humidity-1))
+summary(lm(oxidant~wind+temperature))
 
 summary(lm(oxidant~wind+temperature-1))
 
@@ -163,8 +166,8 @@ lmfull
 help(lm)
 
 plot(oxidant)
-plot(oxidant-stepdown_lm$residuals, oxidant)
-plot(stepup_lm$fitted.values)
+plot(oxidant-oxi_stepdown_lm$residuals, oxidant)
+plot(oxi_stepup_lm$fitted.values)
 
 plot(temperature, oxidant)
 
