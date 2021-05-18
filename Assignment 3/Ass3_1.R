@@ -1,7 +1,7 @@
 ### Exercise 3.1 ###
 
 # import the data
-y1 = scan('sample31.txt')
+sample1 = scan('sample31.txt')
 
 # import the functions h_opt and CV
 source('functions_Ch4.txt')

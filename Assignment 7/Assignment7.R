@@ -123,7 +123,9 @@ summary(lm(oxidant~wind+insolation))
 summary(lm(oxidant~wind+temperature+humidity))
 summary(lm(oxidant~wind+temperature+insolation))
 
-stepup_lm = lm(oxidant~wind+temperature)
+oxi_stepup_lm = lm(oxidant~wind+temperature)
+
+summary(oxi_stepup_lm)
 
 # c)
 
@@ -139,14 +141,38 @@ summary(lm(oxidant~wind+temperature+humidity-1))
 
 summary(lm(oxidant~wind+temperature-1))
 
+oxi_stepdown_lm = lm(oxidant~wind+temperature-1)
+
+summary(oxi_stepdown_lm)
+
 # e)
 
 plot(wind, oxidant)
 plot(temperature, oxidant)
 
+plot(oxi_stepdown_lm$residuals, oxidant)
+plot(oxi_stepup_lm$residuals, oxidant)
+
+qqnorm(oxi_stepdown_lm$residuals)
+qqnorm(oxi_stepup_lm$residuals)
+
 # f)
 
+lmfull
+
+help(lm)
+
+plot(oxidant)
+plot(oxidant-stepdown_lm$residuals, oxidant)
+plot(stepup_lm$fitted.values)
+
+plot(temperature, oxidant)
+
 # g)
+
+u = c(rep(0,3),1,rep(0,length(oxidant)-4))
+msolm = lm(oxidant~wind+temperature+u-1)
+summary(msolm)
 
 # h)
 
@@ -190,7 +216,7 @@ summary(lm(expend~employ+lawyers+bad))  # highest R^2, 'bad' not significant
 summary(lm(expend~employ+lawyers+crime))
 summary(lm(expend~employ+lawyers+pop))
 
-crime_stepup_lm = lm(expend~employ+lawyers)
+expend_stepup_lm = lm(expend~employ+lawyers)
 
 # step-down method
 
@@ -210,9 +236,20 @@ summary(lm(expend~lawyers+employ))
 
 # p-val highest for '(Intercept)', but significant
 
-crime_stepdown_lm = lm(expend~lawyers+employ) # same as step-up
+expend_stepdown_lm = lm(expend~lawyers+employ) # same as step-up
 
-crime_lm = lm(expend~employ+lawyers)
+expend_lm = lm(expend~employ+lawyers)
+
+logexpend_lm = lm(log(expend)~log(employ)+log(lawyers))
+
+# residuals versus 'expend'
+
+plot(expend_lm$residuals, expend,
+     xlab='Residuals of the linear model',
+     ylab='Expend')
+abline(v=0)
+
+qqnorm(expend_lm$residuals)
 
 # a)
 
