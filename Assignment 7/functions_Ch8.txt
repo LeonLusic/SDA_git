@@ -1,4 +1,4 @@
- vardecomposition <- function(x, intercept = T)
+vardecomposition <- function(x, intercept = T)
 {
         #computes the matrix of variance decomposition proportions
         #of the regression coefficients for linear regression with
@@ -39,7 +39,7 @@
         y
 }
 
- varianceinflation <- function(x, intercept = T)
+varianceinflation <- function(x, intercept = T)
 {
         #computes variance inflation factors for linear regression with
 	  #x as regression matrix
@@ -75,7 +75,7 @@ determinationcoef <- function(x, y, interc = T)
 }
 
 
- conditionindices <- function(x, intercept = T)
+conditionindices <- function(x, intercept = T)
 {
         #computes condition indices for the matrix x
         #when intercept=T, a column of 1s is added as first column to x

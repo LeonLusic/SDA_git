@@ -18,8 +18,6 @@ plot(observer2,photo,
 mtext('Number of observed vs. photographed geese',
       side=3, line=-3, outer=TRUE)
 
-help(mtext)
-
 # b)
 
 observer1lm = lm(photo~observer1)
@@ -27,8 +25,6 @@ observer2lm = lm(photo~observer2)
 
 summary(observer1lm)
 summary(observer2lm)
-
-help(lm)
 
 # c)
 
@@ -52,8 +48,6 @@ qqnorm(observer2lm$residuals, main='Normal QQ-plot for observer 2')
 
 ks.test(lm.norm.test(observer1,photo), pnorm)
 ks.test(lm.norm.test(observer2,photo), pnorm)
-
-help(lm.norm)
 
 # e)
 
@@ -142,9 +136,7 @@ summary(lm(oxidant~wind+temperature+humidity))
 
 summary(lm(oxidant~wind+temperature))
 
-summary(lm(oxidant~wind+temperature-1))
-
-oxi_stepdown_lm = lm(oxidant~wind+temperature-1)
+oxi_stepdown_lm = lm(oxidant~wind+temperature)
 
 summary(oxi_stepdown_lm)
 
@@ -153,17 +145,9 @@ summary(oxi_stepdown_lm)
 plot(wind, oxidant)
 plot(temperature, oxidant)
 
-plot(oxi_stepdown_lm$residuals, oxidant)
-plot(oxi_stepup_lm$residuals, oxidant)
-
-qqnorm(oxi_stepdown_lm$residuals)
-qqnorm(oxi_stepup_lm$residuals)
+oxi_lm = lm(oxidant~wind+temperature)
 
 # f)
-
-lmfull
-
-help(lm)
 
 plot(oxidant)
 plot(oxidant-oxi_stepdown_lm$residuals, oxidant)
@@ -171,7 +155,39 @@ plot(oxi_stepup_lm$fitted.values)
 
 plot(temperature, oxidant)
 
+plot(lm(oxidant~day+wind+humidity+insolation)$residuals,
+     lm(temperature~day+wind+humidity+insolation)$residuals,
+     main='added varplot for Temperature',
+     xlab='RXKXK',
+     ylab='RYXK')
+
+plot(lm(oxidant~temperature+wind+humidity+insolation)$residuals,
+     lm(day~temperature+wind+humidity+insolation)$residuals,
+     main='added varplot for Day',
+     xlab='RXKXK',
+     ylab='RYXK')
+
+plot(lm(oxidant~day+temperature+humidity+insolation)$residuals,
+     lm(wind~day+temperature+humidity+insolation)$residuals,
+     main='added varplot for Wind',
+     xlab='RXKXK',
+     ylab='RYXK')
+
+plot(lm(oxidant~day+wind+temperature+insolation)$residuals,
+     lm(humidity~day+wind+temperature+insolation)$residuals,
+     main='added varplot for Humidity',
+     xlab='RXKXK',
+     ylab='RYXK')
+
+plot(lm(oxidant~day+wind+humidity+temperature)$residuals,
+     lm(insolation~day+wind+humidity+temperature)$residuals,
+     main='added varplot for Insolation',
+     xlab='RXKXK',
+     ylab='RYXK')
+
 # g)
+
+plot(oxidant, lm(oxidant~wind+temperature)$residuals)
 
 u = c(rep(0,3),1,rep(0,length(oxidant)-4))
 msolm = lm(oxidant~wind+temperature+u-1)
@@ -179,9 +195,50 @@ summary(msolm)
 
 # h)
 
+# leverage points
+p = 2
+n = 30
+
+2*(p+1)/n
+
+hii = round(hatvalues(oxi_lm), 3)
+
+hii[hii>= 0.2]
+
+# influence points
+round(cooks.distance(oxi_lm), 2)
+
+plot(cooks.distance(oxi_lm),
+     main='Cook\'s distance',
+     xlab='i-th observation',
+     ylab='Cook\'s distance')
+
+# collinearity
+round(cor(pollution[,2:5]), 2)
+
+round(varianceinflation(pollution[,2:5]), 2)
+
+round(conditionindices(pollution[,2:5]), 2)
+
+round(vardecomposition(pollution[,2:5]), 3)
+
 # i)
 
+par(mfrow=c(1,2))
+
+plot(oxi_lm$residuals, oxidant,
+     main='Plot of residuals against the response variable',
+     xlab='Residuals of the linear model',
+     ylab='Oxidant')
+abline(v=0)
+
+qqnorm(oxi_lm$residuals,
+       main='Normal QQ-plot of the residuals')
+
 # j)
+
+summary(oxi_lm)
+round(oxi_lm$coefficients, 2)
 
 ### Exercise 7.3 ###
 
@@ -254,9 +311,32 @@ abline(v=0)
 
 qqnorm(expend_lm$residuals)
 
-# a)
+# leverage points
+p = 2
+n = 51
 
-# b)
+2*(p+1)/n
 
-# c)
+hii = round(hatvalues(expend_lm), 3)
+
+hii[hii>= 2*(p+1)/n]
+
+# influence points
+expend_cook = round(cooks.distance(expend_lm), 2)
+
+expend_cook[expend_cook >= 1]
+
+plot(cooks.distance(oxi_lm),
+     main='Cook\'s distance',
+     xlab='i-th observation',
+     ylab='Cook\'s distance')
+
+# collinearity
+round(cor(expenses[,3:7]), 2)
+
+round(varianceinflation(expenses[,3:7]), 2)
+
+round(conditionindices(expenses[,3:7]), 2)
+
+round(vardecomposition(expenses[,3:7]), 3)
 
